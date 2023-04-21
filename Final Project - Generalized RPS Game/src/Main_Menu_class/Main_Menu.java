@@ -1,6 +1,8 @@
 package Main_Menu_class;
 
 import Player_class.Player;
+import Player_class.Player_derived_classes.NPC;
+import Player_class.Player_derived_classes.PC;
 import Gen_RPS_Game_class.Gen_RPS_Game;
 import java.util.Scanner;
 import java.io.PrintStream;
@@ -9,14 +11,18 @@ import java.util.Random;
 public final class Main_Menu
 {
   // Input variables
-  private static Scanner     scnr      = new Scanner(System.in);
-  private static PrintStream o         = System.out;
-  private static Random      rnd       = null;
-  private static String      input     = "";
-  private static String      inputCaps = "";
-  private static boolean     correct   = false;
-  private static long        inLong    = 0;
-  private static int         inInt     = -1;
+  private static Scanner      scnr          = new Scanner(System.in);
+  private static PrintStream  o             = System.out;
+  private static Random       rnd           = null;
+  private static String       input         = "";
+  private static String       inputCaps     = "";
+  private static boolean      correct       = false;
+  private static long         inLong        = 0;
+  private static int          inInt         = -1;
+  private static int          numAstr       = 0;
+  private static String       strAstr       = "";
+  private static int          numCenter     = 0;
+  private static String       strAstrCenter = "";
   
   // Player and game setup variables
   private static Player       p1        = null;
@@ -69,17 +75,18 @@ public final class Main_Menu
       inputCaps = input.toUpperCase();
       o.println(inputCaps.intern() == "N");
     }
-    if (input.toUpperCase() == "Y")
+    if (inputCaps.intern() == "Y")
     {
-      inInt = 0;
-      while (inInt != 1)
+      inputCaps = "";
+      while (inputCaps.intern() != "Y")
       {
         o.println("Enter an integer (long int) number:");
         inLong = scnr.nextLong();
         seed = inLong;
         o.println("Secret seed will be: " + seed);
-        o.println("Is this okay? If it is, type \"1\" and press <Enter>:");
-        inInt = scnr.nextInt();
+        o.println("Is this okay? If it is, type \"Y\" and press <Enter>:");
+        input = scnr.next();
+        inputCaps = input.toUpperCase();
       }
       rnd = new Random(seed);  // Use given seed . . . 
     }
@@ -104,6 +111,8 @@ public final class Main_Menu
       {
         name = makeRandomName();
       }
+      o.println("Player 1 name: " + name);
+      
       o.println("Will Player 1 be a human or the computer?");
       o.println("Press <H> for human, or <C> for computer, then press <Enter>:");
       input = scnr.next();
@@ -147,9 +156,18 @@ public final class Main_Menu
       }
       else
       {
-        p1 = (Player) Player.makePlayer(isHuman, name);
-        correct = true;
+        if (isHuman)
+        {
+          p1 = (PC) Player.makePlayer(isHuman, name);
+          correct = true;
+        }
+        else
+        {
+          p1 = (NPC) Player.makePlayer(isHuman, name);
+          correct = true;
+        }
       }
+      o.println();
     }
     // END Player 1 block
    
@@ -168,23 +186,38 @@ public final class Main_Menu
       if (name.intern() == "r")
       {
         name = makeRandomName();
+        while (name.intern() == p1.getName())
+        {
+          name = makeRandomName();
+        }
       }
-      o.println("Will Player 2 be a human or the computer?");
-      o.println("Press <H> for human, or <C> for computer, then press <Enter>:");
-      input = scnr.next();
-      inputCaps = input.toUpperCase();
-      while ((inputCaps.intern() != "H") && (inputCaps.intern() != "C"))
+      o.println("Player 2 name: " + name);
+      
+      
+      if (!p1.getHuman())  // Branch only executes if p1 was computer (see else branch comments)
       {
-        o.println("Please try again. Player 2: <H> for Human, <C> for computer:");
+        o.println("Will Player 2 be a human or the computer?");
+        o.println("Press <H> for human, or <C> for computer, then press <Enter>:");
         input = scnr.next();
         inputCaps = input.toUpperCase();
+        while ((inputCaps.intern() != "H") && (inputCaps.intern() != "C"))
+        {
+          o.println("Please try again. Player 2: <H> for Human, <C> for computer:");
+          input = scnr.next();
+          inputCaps = input.toUpperCase();
+        }
+        if (inputCaps.intern() == "H")
+        {
+          isHuman = true;
+        }
+        else 
+        {
+          isHuman = false;
+        }
       }
-      if (inputCaps.intern() == "H")
+      else // If p1 was human, p2 MUST be computer
       {
-        isHuman = true;
-      }
-      else
-      {
+        o.println("Player 1 was human, so Player 2 MUST be a computer");
         isHuman = false;
       }
       
@@ -212,11 +245,26 @@ public final class Main_Menu
       }
       else
       {
-        p2 = (Player) Player.makePlayer(isHuman, name);
-        correct = true;
+        if (isHuman)
+        {
+          p2 = (PC) Player.makePlayer(isHuman, name);
+          correct = true;
+        }
+        else
+        {
+          p2 = (NPC) Player.makePlayer(isHuman, name);
+          correct = true;
+        }
       }
+      o.println();
     }
     // END Player 2 block
+    
+    numAstr = 15 + p1.getName().length() + p2.getName().length();
+    strAstr = makeAsterisks(numAstr);
+    o.println(strAstr);
+    o.println("* " + p1.getName() + " versus " + p2.getName() + "!!! *");
+    o.println(strAstr);
     
     // ******************
     // * MAIN PLAY LOOP *
@@ -247,6 +295,8 @@ public final class Main_Menu
       {
         gameType = inInt - 1;
       }
+      o.println();
+      o.println();
       
       // Get winning score
       o.println("How many victorious throws to win the game?");
@@ -258,6 +308,9 @@ public final class Main_Menu
                 + "<Enter>:");
         inInt = scnr.nextInt();
       }
+      o.println();
+      o.println();
+      o.println();
       winScore = inInt;
       
       // ******************
@@ -266,10 +319,14 @@ public final class Main_Menu
       game = new Gen_RPS_Game (p1, p2, gameType, winScore, scnr, rnd);
       winner = game.mainLoop();
       winner.addWin();
+      strAstr = Main_Menu.makeAsterisks(16);
+      o.println(strAstr);
+      o.println("* Game summary: *");
+      o.println(strAstr);
       o.println(winner.getName() + " wins that game!");
       o.println("The match stands at:");
-      o.println(p1.getName() + " has " + p1.getWins() + "wins, and");
-      o.println(p2.getName() + " has " + p2.getWins() + "wins.");
+      o.print  ("Player 1, " + p1.getName() + ", has " + p1.getWins() + " wins, and");
+      o.println("Player 2, " + p2.getName() + ", has " + p2.getWins() + " wins.");
       o.println("Let's move on to the next game!");
       o.println();
       o.println();
@@ -279,27 +336,68 @@ public final class Main_Menu
     // * Output results and exit the program *
     // ***************************************
     o.println();
+    o.println();
+    o.println();
+    o.println();
+    o.println("***************************************************");
+    o.println("*********                               ***********");
+    o.println("*********  M A T C H   S U M M A R Y :  ***********");
+    o.println("*********                               ***********");
     o.println("***************************************************");
     if (p1.getWins() == p2.getWins())
     {
+      numAstr  = 27;
+      numAstr += p1.getName().length();
+      numAstr += p2.getName().length();
+      numAstr += String.valueOf(p1.getWins()).length();
+      numAstr += String.valueOf(p2.getWins()).length();
+      strAstr  = Main_Menu.makeAsterisks(numAstr);
+      o.println(strAstr);
       o.println("The matchup was a TIE!");
-      o.println(p1.getName() + " had " + p1.getWins() + "wins, and");
-      o.println(p2.getName() + " had " + p2.getWins() + "wins.");
+      o.print  (p1.getName() + " had " + p1.getWins() + " wins, and");
+      o.println(p2.getName() + " had " + p2.getWins() + " wins.");
       o.println("Congratulations to both of you!");
+      o.println(strAstr);
     }
     else if (p1.getWins() > p2.getWins())
     {
-      o.println(p1.getName() + " WINS!");
-      o.println(p1.getName() + " had " + p1.getWins() + "wins, and");
-      o.println(p2.getName() + " had " + p2.getWins() + "wins.");
-      o.println("Congratulations, " + p1.getName() + "!");
+      numAstr  = 31;
+      numAstr += p1.getName().length();
+      numAstr += p2.getName().length();
+      numAstr += String.valueOf(p1.getWins()).length();
+      numAstr += String.valueOf(p2.getWins()).length();
+      strAstr  = Main_Menu.makeAsterisks(numAstr);
+      o.println(strAstr);      
+      o.print  ("* " + p1.getName() + " had " + p1.getWins() + " wins, and ");
+      o.println(p2.getName() + " had " + p2.getWins() + " wins. *");
+      numCenter = 8 + p1.getName().length();
+      strAstrCenter = makeAsterisksCenter(numAstr, numCenter);
+      o.println(strAstrCenter + " " + p1.getName() + " WINS! " + strAstrCenter);
+      o.println(strAstr);
+      numCenter = 22 + p1.getName().length();
+      strAstrCenter = Main_Menu.makeAsterisksCenter(numAstr, numCenter);
+      o.println(strAstrCenter + "  Congratulations, " + p1.getName() + "!  " + strAstrCenter);
+      o.println(strAstr);
     }
     else if (p2.getWins() > p1.getWins())
     {
-      o.println(p2.getName() + " WINS!");
-      o.println(p1.getName() + " had " + p1.getWins() + "wins, and");
-      o.println(p2.getName() + " had " + p2.getWins() + "wins.");
-      o.println("Congratulations, " + p2.getName() + "!");
+      numAstr  = 31;
+      numAstr += p1.getName().length();
+      numAstr += p2.getName().length();
+      numAstr += String.valueOf(p1.getWins()).length();
+      numAstr += String.valueOf(p2.getWins()).length();
+      strAstr  = Main_Menu.makeAsterisks(numAstr);
+      o.println(strAstr);      
+      o.print  ("* " + p1.getName() + " had " + p1.getWins() + " wins, and ");
+      o.println(p2.getName() + " had " + p2.getWins() + " wins. *");
+      numCenter = 8 + p2.getName().length();
+      strAstrCenter = makeAsterisksCenter(numAstr, numCenter);
+      o.println(strAstrCenter + " " + p2.getName() + " WINS! " + strAstrCenter);
+      o.println(strAstr);
+      numCenter = 22 + p2.getName().length();
+      strAstrCenter = Main_Menu.makeAsterisksCenter(numAstr, numCenter);
+      o.println(strAstrCenter + "  Congratulations, " + p2.getName() + "!  " + strAstrCenter);
+      o.println(strAstr);
     }
     return 0; // Return to main() and exit the program
   }
@@ -361,6 +459,33 @@ public final class Main_Menu
                       "Zenon"};
     x = rnd.nextInt(51);
     return names[x];
+  }
+  
+  public static String makeAsterisks (int numAstr)
+  {
+    String outStr = "";
+    
+    for (int i = 0; i < numAstr; i++)
+    {
+      outStr += "*";
+    }
+    
+    return outStr;
+  }
+  
+  public static String makeAsterisksCenter (int totalAstr, int numCenter)
+  {
+    String  outStr  = "";
+    int     numAstr = 0;
+    
+    numAstr = (totalAstr / 2) - (numCenter / 2);
+    
+    for (int i = 0; i < numAstr; i++)
+    {
+      outStr += "*";
+    }
+        
+    return outStr;
   }
 }
 

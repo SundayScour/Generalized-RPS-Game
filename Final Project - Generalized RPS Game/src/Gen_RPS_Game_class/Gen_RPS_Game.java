@@ -1,5 +1,6 @@
 package Gen_RPS_Game_class;
 
+import Main_Menu_class.Main_Menu;
 import Player_class.Player;
 import Player_class.Player_derived_classes.PC;
 import Player_class.Player_derived_classes.NPC;
@@ -13,6 +14,8 @@ public class Gen_RPS_Game
   private Random      rnd;
   private Scanner     scnr;
   private PrintStream o;
+  private int         numAstr   = -1;
+  private String      strAstr   = "";
   private int         gameType;
   private String      gameTitle;
   private int         nMax;
@@ -23,7 +26,9 @@ public class Gen_RPS_Game
   private Player      p2;
   private int         p2Throw;
   private Player      throwWinner;
+  private int         winThrow;
   private Player      throwLoser;
+  private int         loseThrow;
   private int         winScore;
   
   public Gen_RPS_Game ()
@@ -43,13 +48,19 @@ public class Gen_RPS_Game
   
   public Gen_RPS_Game (Player p1, Player p2, int gameType, int winScore, Scanner scnr, Random rnd)
   {
+    this.gameType = gameType;
+    this.winScore = winScore;
+    this.scnr = scnr;
+    this.rnd = rnd;
+    o = System.out;
+
     if (p1.getHuman())
     {
       this.p1 = (PC) p1;
     }
     else
     {
-      this.p1 = (NPC) p2;
+      this.p1 = (NPC) p1;
     }
     if (p2.getHuman())
     {
@@ -59,11 +70,8 @@ public class Gen_RPS_Game
     {
       this.p2 = (NPC) p2;
     }
-    this.gameType = gameType;
-    this.winScore = winScore;
-    this.scnr = scnr;
-    this.rnd = rnd;
-    o = System.out;
+    p1.resetScore();
+    p2.resetScore();
     
     gameSetup();
   }
@@ -148,7 +156,7 @@ public class Gen_RPS_Game
                                      {"Obliterates", "shatters", "disintegrates", "headshots"},
                                      {"surge protects from", "obviates", "confuses", "doxes"},
                                      {"melts", "crumbles", "inconveniences", "fuses"},
-                                     {"cut", "decapitate", "stab", "short curcuit"},
+                                     {"cut", "decapitate", "stab", "short circuit"},
                                      {"smothers", "disproves", "jams", "flys away from"}};
         validGame = true;
         break;
@@ -166,32 +174,39 @@ public class Gen_RPS_Game
     
     while ((p1.getScore() < winScore) && (p2.getScore() < winScore))
     {
-      o.println(p1.toString());
+ //     o.println(p1.toString());
       if (p1.getHuman())
       {
-        p1.PCThrow(scnr, nMax, pieceNames);
+        p1Throw = p1.rpsThrow(scnr, nMax, pieceNames);
       }
       else
       {
-        p1.NPCThrow(rnd, nMax, pieceNames);
+        p1Throw = p1.rpsThrow(rnd, nMax, pieceNames);
       }
-      o.println(p2.toString());
+//      o.println(p2.toString());
       if (p2.getHuman())
       {
-        p2.PCThrow(scnr, nMax, pieceNames);
+        p2Throw = p2.rpsThrow(scnr, nMax, pieceNames);
       }
       else
       {
-        p2.NPCThrow(rnd, nMax, pieceNames);
+        p2Throw = p2.rpsThrow(rnd, nMax, pieceNames);
       }
-      if (p1.getThrow() == p2.getThrow())
+      if (p1Throw == p2Throw)
       {
-        o.println("Tie!");
+        numAstr = 14 + pieceNames[p1Throw].length() + pieceNames[p2Throw].length();
+        strAstr = Main_Menu.makeAsterisks(numAstr);
+        o.println(strAstr);
+        o.println("* " + pieceNames[p1Throw] + " vs " + pieceNames[p2Throw] + ": TIE! *");
+        o.println(strAstr);
+        o.println();
       }
       else
       { 
+        o.print   ("Player 1, " + p1.getName() + ", throws " + pieceNames[p1Throw] + " and ");
+        o.println ("Player 2, " + p2.getName() + ", throws " + pieceNames[p2Throw] + ".");       
         evalThrows();
-        printWin(throwWinner, throwLoser);
+        printThrowWin();
       }
     }
     
@@ -208,17 +223,17 @@ public class Gen_RPS_Game
   private void evalThrows ()
   {
  
-    // ***** Swing and a miss on first formula: *****
+    // ***** Strike 1: Swing and a miss on first formula: *****
     //if ((((p1.getThrow() + 1) / (nMax - 1)) % 2) == ((p2.getThrow() / (nMax - 1)) % 2))
-    // * End Strike 1 *
+    // * END STRIKE 1 *
     
-    int     p1T     = p1.getThrow();
-    int     p2T     = p2.getThrow();
+    int     p1T     = p1Throw;
+    int     p2T     = p2Throw;
     Boolean p1Wins  = false;
     
-    // ***** Strike 2 on second formula: *****
+    // ***** Strike 2: Second formula: *****
     //if ( (p2T % 2) == (((p1T + 1) % nMax) % 2) )
-    // * End Strike 2 *
+    // * END STRIKE 2 *
     
     // Let's eschew elegance and go BRUTE FORCE!: 
     for (int i = 0; i < ((nMax - 1) / 2); i++)
@@ -235,37 +250,45 @@ public class Gen_RPS_Game
     if (p1Wins)
     {
       throwWinner = p1;
-      throwLoser = p2;
+      winThrow    = p1Throw;
+      throwLoser  = p2;
+      loseThrow   = p2Throw;
       p1.incScore();
-      o.println(pieceNames[throwWinner.getThrow()] + " beats " + pieceNames[throwLoser.getThrow()]);
+//      o.println(pieceNames[p1T] + " beats " + pieceNames[p2T]);
     }
     else
     {
       throwWinner = p2;
-      throwLoser = p1;
+      winThrow    = p2Throw;
+      throwLoser  = p1;
+      loseThrow   = p1Throw;
       p2.incScore();
-      o.println(pieceNames[throwWinner.getThrow()] + " beats " + pieceNames[throwLoser.getThrow()]);
+//      o.println(pieceNames[p2T] + " beats " + pieceNames[p1T]);
     }
   }
   
-  private void printWin(Player winner, Player loser)
+  private void printThrowWin()
   {
-    String winName   = winner.getName();    
-    String winPiece  = pieceNames[winner.getThrow()];
-    String loseName  = loser.getName();
-    String losePiece = pieceNames[loser.getThrow()];
-    int    verbRow   = winner.getThrow();
-    int    verbCol   = ((loser.getThrow() - winner.getThrow() / 2)) % (gameType + 1);
+    String  winName   = throwWinner.getName();    
+    String  winPiece  = pieceNames[winThrow];
+    String  loseName  = throwLoser.getName();
+    String  losePiece = pieceNames[loseThrow];
+    int     verbRow   = winThrow;
+    int     verbCol   = ((loseThrow - winThrow) / 2) % (gameType + 1);
     if (verbCol < 0)
     {
-      //verbCol += (gameType + 1);
-      //verbCol %= (gameType + 1);
-      verbCol = Math.abs(verbCol);
+      verbCol = (verbCol + (gameType + 1));
     }
-    o.println("verbCol = " + verbCol);
+//    o.println("verbCol = " + verbCol);
     String winVerb   = verbMatrix[verbRow][verbCol];
-        
-    o.println(winPiece + " " + winVerb + " " + losePiece + "! " + winName + " wins!");
+
+    numAstr = 14 + winPiece.length() + winVerb.length() + losePiece.length() + winName.length();
+    strAstr = Main_Menu.makeAsterisks(numAstr);
+    o.println(strAstr);
+    o.println("* " + winPiece + " " + winVerb + " " + losePiece + "! " + winName + " wins! *");
+    o.println(strAstr);
+    o.print  ("Score: Player 1, " + p1.getName() + ", has " + p1.getScore() + " points, and ");
+    o.println       ("Player 2, " + p2.getName() + ", has " + p2.getScore() + " points.");
     o.println();
   }
 }

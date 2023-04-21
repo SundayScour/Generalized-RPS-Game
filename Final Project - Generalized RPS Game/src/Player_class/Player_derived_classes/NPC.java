@@ -2,36 +2,43 @@ package Player_class.Player_derived_classes;
 
 import Player_class.Player;
 import java.util.Random;
+import java.util.Scanner;
 
-public class NPC extends Player
+public class NPC implements Player
 {
-  private int myThrow = -1;
+  private boolean human;
+  private String  name;
+  private int     wins;
+  private int     score;
+  private int     myThrow;
   
   private NPC ()
   {
-    human = true;
-    name  = "UNNAMED";
-    wins  = -1;
-    score = -1;
+    human   = true;
+    name    = "UNNAMED";
+    wins    = -1;
+    score   = -1;
+    myThrow = -1;
   }
   
   public NPC (boolean human, String name)
   {
-    this.human = human;
-    this.name  = name;
-    this.wins  = 0;
-    this.score = 0;
+    this.human   = human;
+    this.name    = name;
+    this.wins    = 0;
+    this.score   = 0;
+    this.myThrow = -1;
   }
   
-  public int getThrow()
-  {
-    return myThrow;
-  }
-
   @Override
   public boolean getHuman ()
   {
     return human;
+  }
+  
+  public String getName ()
+  {
+    return name;
   }
   
   @Override
@@ -76,14 +83,73 @@ public class NPC extends Player
     score -= Math.abs(removePoints);
   }
   
-  //@Override
-  public void NPCThrow (Random rnd, int nMax, String[] pieceNames)
+  @Override
+  public void resetScore()
   {
-    System.out.println("Throw between 0 and (" + nMax + " - 1)");
-    myThrow =  rnd.nextInt(nMax);
-    System.out.println(pieceNames[myThrow]); // Consistency verification
+    score = 0;
+  }
+  
+  public int rpsThrow (Random rnd, int nMax, String[] pieceNames)
+  {
+//    System.out.println("Throw between 0 and (" + nMax + " - 1)");
+    int myThrow =  rnd.nextInt(nMax);
+//    System.out.println(pieceNames[myThrow]); // Consistency verification
+    return myThrow;
+  }
+
+  public int rpsThrow(Random rnd, int nMax)
+  {
+//    System.out.println("Throw between 0 and (" + nMax + " - 1)");
+    return  rnd.nextInt(nMax);
+  }
+
+  public int rpsThrow(Scanner scnr, int nMax, String[] pieceNames)
+  {
+    // TODO Auto-generated method stub
+    
+    // ONLY IMPLEMENTED IN PC CLASS
+    return -1;
+  }
+  
+  public int getThrow()
+  {
+    return myThrow;
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
