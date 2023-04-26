@@ -6,23 +6,42 @@ import java.util.Scanner;
 import Player_class.Player_derived_classes.NPC;
 import Player_class.Player_derived_classes.PC;
 
-public interface Player
+public abstract class Player
 {
-//   public boolean human;
-/*
-  Protected String name;
-  protected int wins;
-  protected int score;
-
+  protected Boolean human;
+  protected String  name;
+  protected int     wins;
+  protected int     score;
+  protected int     myThrow;
+//  protected Integer     score;
+//  protected Integer     myThrow;
   
+
   public Player ()
   {
-    // DOES NOTHING.
+    human     = null;
+    name      = "_UNINITIALIZED_NAME_";
+    wins      = -1;
+    score     = -1;
+//    score     = null;
+    myThrow   = -1;
+//    myThrow = null;
   }
-*/  
-  public static Object makePlayer (boolean human, String name)
+  
+  public Player (boolean human, String name)
   {
-    Object madePlayer = null;
+    this.human      = human;
+    this.name       = name;
+    this.wins       = 0;
+    this.score      = 0;
+    this.myThrow    = -1;
+//    this.myThrow    = null;
+  }
+  
+  public static Player makePlayer (boolean human, String name)
+  {
+    Object madePlayer = null; // Start from base, so no need to cast either called constructor
+    
     if (human)
     {
       madePlayer = new PC(human, name);
@@ -32,71 +51,146 @@ public interface Player
       madePlayer = new NPC(human, name);
     }
     
-//    System.out.println("human = " + human + " name = " + name);
-//    System.out.println(madePlayer.toString());
-    return madePlayer;
+//    System.out.println("human = " + human + " name = " + name); // Early development test output
+//    System.out.println(madePlayer.toString());                  // Early development test output
+    
+    return (Player)madePlayer; // NOW I've gotta cast to return proper type
   }
   
-//  public int getThrow();
-//  {
-//    return -12345678;
-//  }
+  public int getThrow()
+  {
+    return (int)myThrow;
+  }
   
-  public boolean getHuman ();
-//  {
-//    return false;
-//  }
+  public boolean getHuman ()
+  {
+    return (boolean)human;
+  }
   
-  public String getName ();
-//  {
-//    return "";
-//  }
+  public String getName ()
+  {
+    return name;
+  }
   
-  public int getWins ();
-//  {
-//    return -1;
-//  }
+  public int getWins ()
+  {
+    return wins;
+  }
   
-  public void addWin ();
-//  {
-//  }
+  public void addWin ()
+  {
+    wins++;
+  }
   
-  public int getScore ();
-//  {
-//    return -1;
-//  }
+  public int getScore ()
+  {
+    return score;
+  }
   
-  public void incScore ();
-//  {
-//  }
+  public void incScore ()
+  {
+    score++;
+  }
   
-  public void incScore (int addPoints);
-//  {
-//  }
+  public void incScore (int addPoints)
+  {
+    score += Math.abs(addPoints);
+  }
   
-  public void decScore ();
-//  {
-//  }
+  public void decScore ()
+  {
+    score--;
+  }
   
-  public void decScore (int removePoints);
-//  {
-//  }
+  public void decScore (int removePoints)
+  {
+    score -= Math.abs(removePoints);
+  }
   
-  public void resetScore ();
- 
-  public int rpsThrow (Random rnd, int nMax);
+  public void resetScore ()
+  {
+    score = 0;
+  }
+ }
 
-//  {
-//  }
-  
-  public int rpsThrow (Random rnd, int nMax, String[] pieceNames);
-//  {  
-//  }
-  
-  public int rpsThrow (Scanner scnr, int nMax, String[] pieceNames);
-//  {
-//  }
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
