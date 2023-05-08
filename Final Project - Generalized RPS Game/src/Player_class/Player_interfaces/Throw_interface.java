@@ -1,7 +1,6 @@
 package Player_class.Player_interfaces;
 
 /**
- * 
  * This functionality could be done more simply as a method within
  * the abstract base Player class, but I want experience using
  * Interfaces on this project.

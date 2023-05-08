@@ -14,8 +14,7 @@ public class My_Quit_Exception extends Exception
    * Just the default contructor to make my custom exception
    */
   public My_Quit_Exception ()
-  {
-    
+  {    
   }
   
   /**
