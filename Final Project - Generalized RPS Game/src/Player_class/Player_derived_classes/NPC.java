@@ -55,4 +55,4 @@ public class NPC extends Player implements Throw_interface
   {
     myThrow =  rnd.nextInt(nMax);
   }
-}  
+}

@@ -210,14 +210,14 @@ public final class Main_Menu
       o.println();
       o.println("*********************************");
       o.println("* What will Player 1's name be? *");
-      o.println("*********************************************************************************");
-      o.println("* Type a name, or type a lowercase \"r\" for a random name, then press <Enter>: *");
-      o.println("*********************************************************************************");
+      o.println("*******************************************************************");
+      o.println("* Type a name, or type <R> for a random name, then press <Enter>: *");
+      o.println("*******************************************************************");
       o.println();
       o.print(": ");
       name = scnr.nextLine();
       name = scnr.nextLine();
-      if (name.intern() == "r")
+      if (name.toUpperCase().intern() == "R")
       {
         name = makeRandomName();
       }
@@ -317,14 +317,14 @@ public final class Main_Menu
       o.println();
       o.println("*********************************");
       o.println("* What will Player 2's name be? *");
-      o.println("*********************************************************************************");
-      o.println("* Type a name, or type a lowercase \"r\" for a random name, then press <Enter>: *");
-      o.println("*********************************************************************************");
+      o.println("*******************************************************************");
+      o.println("* Type a name, or type <R> for a random name, then press <Enter>: *");
+      o.println("*******************************************************************");
       o.println();
       o.print(": ");
       name = scnr.nextLine();
       name = scnr.nextLine();
-      if (name.intern() == "r")
+      if (name.toUpperCase().intern() == "R")
       {
         name = makeRandomName();
       }
@@ -500,13 +500,28 @@ public final class Main_Menu
       o.println("*********************************************************");
       o.println();
       o.print(": ");
-      inInt = scnr.nextInt();
+      try
+      {
+        inInt = scnr.nextInt();
+      }
+      catch (InputMismatchException iME)
+      {
+        String trash = scnr.next();
+        inInt = -1;
+      }
       while ((inInt < 1) || (inInt > 100))
       {
-        o.println("Please try again. Type a number between 1 and 100, then press <Enter>:");
-        o.println();
-        o.print(": ");
-        inInt = scnr.nextInt();
+        try
+        {
+          o.println("Please try again. Type a number between 1 and 100, then press <Enter>:");
+          o.println();
+          o.print(": ");
+          inInt = scnr.nextInt();
+        }
+        catch (InputMismatchException iME)
+        {
+          String trash = scnr.next(); // Discard invalid input
+        }
       }
       o.println();
       o.println();
